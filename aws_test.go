@@ -26,7 +26,7 @@ var (
 )
 
 func init() {
-	configFile, err := ioutil.ReadFile("config-example.toml")
+	configFile, err := ioutil.ReadFile("config-aws.toml")
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +34,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	client := Load("storage").Build(WithBucketKey("template"))
+	client := Load("storage").Build()
 
 	if err != nil {
 		panic(err)

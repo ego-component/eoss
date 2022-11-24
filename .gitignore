@@ -1,5 +1,7 @@
 .idea/*
 .env*
 !.env-example
+config-*
+!config-example
 
 dev/

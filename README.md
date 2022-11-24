@@ -15,41 +15,46 @@ awos for node: https://github.com/shimohq/awos-js
 Use go get to retrieve the SDK to add it to your GOPATH workspace, or project's Go module dependencies.
 
 ```bash
-go get github.com/shimohq/awos/v3
+go get github.com/ego-component/awos
 ```
 
 ## How to use
+### config
+```toml
+[storage]
+storageType = "oss" # oss|s3
+accessKeyID = "xxx"
+accessKeySecret = "xxx"
+endpoint = "oss-cn-beijing.aliyuncs.com"
+bucket = "aaa"
+shards = []
+[storage.buckets.template] # 可配置多套buckets配置，buckets里的配置会替换上层配置
+bucket = "template-bucket"
+shards = []
+[storage.buckets.fileContent]
+bucket = "contents-bucket"
+shards = [
+ "abcdefghijklmnopqr",
+ "stuvwxyz0123456789"
+]
+```
 
 ```golang
-import "github.com/shimohq/awos/v3"
+import "github.com/ego-component/awos"
 
-awsClient, err := awos.New(&awos.Options{
-    // Required, value is one of oss/s3, case insensetive
-    StorageType: "string"
-    // Required
-    AccessKeyID: "string"
-    // Required
-    AccessKeySecret: "string"
-    // Required
-    Endpoint: "string"
-    // Required
-    Bucket: "string"
-    // Optional, choose which bucket to use based on the last character of the key,
-    // if bucket is 'content', shards is ['abc', 'edf'],
-    // then the last character of the key with a/b/c will automatically use the content-abc bucket, and vice versa
-    Shards: [2]string{"abc","def"}
-    // Only for s3-like
-    Region: "string"
-    // Only for s3-like, whether to force path style URLs for S3 objects.
-    S3ForcePathStyle: false
-    // Only for s3-like
-    SSL: false
-})
+// 单独一个 bucket 配置
+client := awos.Load("storage").Build()
+// 多 bucket 配置
+client := awos.Load("storage").Build(awos.WithBucketKey("template"))
+
+// 带context（可记录链路）
+client.WithContext(ctx).Get(key)
 ```
 
 Available operations：
 
 ```golang
+WithContext(ctx context.Context) Component
 Get(key string, options ...GetOptions) (string, error)
 GetBytes(key string, options ...GetOptions) ([]byte, error)
 GetAsReader(key string, options ...GetOptions) (io.ReadCloser, error)

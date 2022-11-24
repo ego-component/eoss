@@ -11,10 +11,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/BurntSushi/toml"
 	"github.com/golang/snappy"
+	"github.com/gotomicro/ego/core/econf"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/joho/godotenv"
 )
 
 const (
@@ -32,27 +32,21 @@ var (
 )
 
 func init() {
-	err := godotenv.Overload(".env-oss")
+	configFile, err := ioutil.ReadFile("config-oss.toml")
+	if err != nil {
+		panic(err)
+	}
+	err = econf.LoadFromReader(bytes.NewReader(configFile), toml.Unmarshal)
+	if err != nil {
+		panic(err)
+	}
+	client := Load("storage").Build()
+
 	if err != nil {
 		panic(err)
 	}
 
-	//client, err := New(&Options{
-	//	StorageType:      os.Getenv("StorageType"),
-	//	AccessKeyID:      os.Getenv("AccessKeyID"),
-	//	AccessKeySecret:  os.Getenv("AccessKeySecret"),
-	//	Endpoint:         os.Getenv("Endpoint"),
-	//	Bucket:           os.Getenv("Bucket"),
-	//	Region:           os.Getenv("Region"),
-	//	S3ForcePathStyle: os.Getenv("S3ForcePathStyle") == "true",
-	//	SSL:              os.Getenv("SSL") == "true",
-	//})
-
-	//if err != nil {
-	//	panic(err)
-	//}
-
-	//ossClient = client
+	ossClient = client
 }
 
 func TestOSS_Put(t *testing.T) {
