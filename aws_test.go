@@ -26,7 +26,7 @@ const (
 )
 
 var (
-	awsClient Client
+	awsClient Component
 )
 
 func init() {
@@ -35,7 +35,7 @@ func init() {
 		panic(err)
 	}
 
-	client, err := New(&Options{
+	client, err := newComponent(&config{
 		StorageType:      os.Getenv("StorageType"),
 		AccessKeyID:      os.Getenv("AccessKeyID"),
 		AccessKeySecret:  os.Getenv("AccessKeySecret"),

@@ -7,7 +7,7 @@ type putOptions struct {
 	contentEncoding    *string
 	contentDisposition *string
 	cacheControl       *string
-	expires             *time.Time
+	expires            *time.Time
 }
 
 type PutOptions func(options *putOptions)

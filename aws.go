@@ -17,7 +17,7 @@ import (
 	"github.com/golang/snappy"
 )
 
-var _ Client = (*S3)(nil)
+var _ Component = (*S3)(nil)
 
 type S3 struct {
 	ShardsBucket map[string]string
@@ -26,7 +26,7 @@ type S3 struct {
 	ctx          context.Context
 }
 
-func (a *S3) WithContext(ctx context.Context) Client {
+func (a *S3) WithContext(ctx context.Context) Component {
 	b := &S3{
 		ShardsBucket: a.ShardsBucket,
 		BucketName:   a.BucketName,

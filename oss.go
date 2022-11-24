@@ -16,14 +16,14 @@ import (
 	"github.com/golang/snappy"
 )
 
-var _ Client = (*OSS)(nil)
+var _ Component = (*OSS)(nil)
 
 type OSS struct {
 	Bucket *oss.Bucket
 	Shards map[string]*oss.Bucket
 }
 
-func (ossClient *OSS) WithContext(context.Context) Client {
+func (ossClient *OSS) WithContext(context.Context) Component {
 	// oss 暂时不好支持context，先忽略
 	return ossClient
 }

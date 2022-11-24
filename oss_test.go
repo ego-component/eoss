@@ -6,13 +6,14 @@ Put your environment configuration in ".env-oss"
 
 import (
 	"bytes"
-	"github.com/golang/snappy"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/golang/snappy"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/joho/godotenv"
 )
@@ -28,7 +29,7 @@ const (
 )
 
 var (
-	ossClient Client
+	ossClient Component
 )
 
 func init() {
