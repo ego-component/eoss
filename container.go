@@ -1,6 +1,8 @@
 package awos
 
 import (
+	"fmt"
+
 	"github.com/gotomicro/ego/core/econf"
 	"github.com/gotomicro/ego/core/elog"
 )
@@ -20,6 +22,10 @@ func DefaultContainer() *Container {
 
 func Load(key string) *Container {
 	c := DefaultContainer()
+	if err := econf.UnmarshalKey(key, &c.config.bucketConfig); err != nil {
+		c.logger.Panic("parse config error", elog.FieldErr(err), elog.FieldKey(key))
+		return c
+	}
 	if err := econf.UnmarshalKey(key, &c.config); err != nil {
 		c.logger.Panic("parse config error", elog.FieldErr(err), elog.FieldKey(key))
 		return c
@@ -32,6 +38,13 @@ func Load(key string) *Container {
 func (c *Container) Build(options ...BuildOption) Component {
 	for _, option := range options {
 		option(c)
+	}
+	if c.config.bucketKey != "" {
+		key := fmt.Sprintf("%s.buckets.%s", c.name, c.config.bucketKey)
+		if err := econf.UnmarshalKey(key, &c.config.bucketConfig); err != nil {
+			c.logger.Panic("parse bucket config error", elog.FieldErr(err), elog.FieldKey(key))
+			return nil
+		}
 	}
 	comp, err := newComponent(c.config)
 	if err != nil {

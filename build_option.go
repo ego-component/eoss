@@ -61,3 +61,9 @@ func WithS3HttpTimeoutSecs(s3HttpTimeoutSecs int64) BuildOption {
 		c.config.S3HttpTimeoutSecs = s3HttpTimeoutSecs
 	}
 }
+
+func WithBucketKey(bucketKey string) BuildOption {
+	return func(c *Container) {
+		c.config.bucketKey = bucketKey
+	}
+}

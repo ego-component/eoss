@@ -1,0 +1,14 @@
+[storage]
+storageType = "oss"
+accessKeyID = "xxx"
+accessKeySecret = "xxx"
+endpoint = "oss-cn-beijing.aliyuncs.com"
+[storage.buckets.template]
+bucket = "template-bucket"
+shards = []
+[storage.buckets.fileContent]
+bucket = "contents-bucket"
+shards = [
+ "abcdefghijklmnopqr",
+ "stuvwxyz0123456789"
+]

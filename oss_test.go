@@ -7,7 +7,6 @@ Put your environment configuration in ".env-oss"
 import (
 	"bytes"
 	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -38,22 +37,22 @@ func init() {
 		panic(err)
 	}
 
-	client, err := New(&Options{
-		StorageType:      os.Getenv("StorageType"),
-		AccessKeyID:      os.Getenv("AccessKeyID"),
-		AccessKeySecret:  os.Getenv("AccessKeySecret"),
-		Endpoint:         os.Getenv("Endpoint"),
-		Bucket:           os.Getenv("Bucket"),
-		Region:           os.Getenv("Region"),
-		S3ForcePathStyle: os.Getenv("S3ForcePathStyle") == "true",
-		SSL:              os.Getenv("SSL") == "true",
-	})
+	//client, err := New(&Options{
+	//	StorageType:      os.Getenv("StorageType"),
+	//	AccessKeyID:      os.Getenv("AccessKeyID"),
+	//	AccessKeySecret:  os.Getenv("AccessKeySecret"),
+	//	Endpoint:         os.Getenv("Endpoint"),
+	//	Bucket:           os.Getenv("Bucket"),
+	//	Region:           os.Getenv("Region"),
+	//	S3ForcePathStyle: os.Getenv("S3ForcePathStyle") == "true",
+	//	SSL:              os.Getenv("SSL") == "true",
+	//})
 
-	if err != nil {
-		panic(err)
-	}
+	//if err != nil {
+	//	panic(err)
+	//}
 
-	ossClient = client
+	//ossClient = client
 }
 
 func TestOSS_Put(t *testing.T) {

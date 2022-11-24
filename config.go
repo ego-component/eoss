@@ -1,6 +1,12 @@
 package awos
 
 type config struct {
+	bucketConfig
+	Buckets   map[string]bucketConfig
+	bucketKey string
+}
+
+type bucketConfig struct {
 	// Required, value is one of oss/s3, case insensetive
 	StorageType string
 	// Required
@@ -32,9 +38,10 @@ type config struct {
 
 // DefaultConfig 返回默认配置
 func DefaultConfig() *config {
-	return &config{
+	return &config{bucketConfig: bucketConfig{
 		StorageType:            "s3",
 		S3HttpTimeoutSecs:      60,
 		EnableTraceInterceptor: true,
+	},
 	}
 }

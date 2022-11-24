@@ -1,18 +1,14 @@
 package awos
 
-/**
-Put your environment configuration in ".env-aws"
-*/
-
 import (
 	"bytes"
 	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
 	"testing"
 
-	"github.com/joho/godotenv"
+	"github.com/BurntSushi/toml"
+	"github.com/gotomicro/ego/core/econf"
 )
 
 const (
@@ -30,21 +26,15 @@ var (
 )
 
 func init() {
-	err := godotenv.Overload(".env-aws")
+	configFile, err := ioutil.ReadFile("config-example.toml")
 	if err != nil {
 		panic(err)
 	}
-
-	client, err := newComponent(&config{
-		StorageType:      os.Getenv("StorageType"),
-		AccessKeyID:      os.Getenv("AccessKeyID"),
-		AccessKeySecret:  os.Getenv("AccessKeySecret"),
-		Endpoint:         os.Getenv("Endpoint"),
-		Bucket:           os.Getenv("Bucket"),
-		Region:           os.Getenv("Region"),
-		S3ForcePathStyle: os.Getenv("S3ForcePathStyle") == "true",
-		SSL:              os.Getenv("SSL") == "true",
-	})
+	err = econf.LoadFromReader(bytes.NewReader(configFile), toml.Unmarshal)
+	if err != nil {
+		panic(err)
+	}
+	client := Load("storage").Build(WithBucketKey("template"))
 
 	if err != nil {
 		panic(err)
