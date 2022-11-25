@@ -33,6 +33,8 @@ type bucketConfig struct {
 	S3HttpTimeoutSecs int64
 	// EnableTraceInterceptor enable otel trace (only for s3)
 	EnableTraceInterceptor bool
+	// EnableMetricInterceptor enable prom metrics
+	EnableMetricInterceptor bool
 	// EnableClientTrace
 	EnableClientTrace bool
 }
@@ -40,9 +42,10 @@ type bucketConfig struct {
 // DefaultConfig 返回默认配置
 func DefaultConfig() *config {
 	return &config{bucketConfig: bucketConfig{
-		StorageType:            "s3",
-		S3HttpTimeoutSecs:      60,
-		EnableTraceInterceptor: true,
+		StorageType:             "s3",
+		S3HttpTimeoutSecs:       60,
+		EnableTraceInterceptor:  true,
+		EnableMetricInterceptor: true,
 	},
 	}
 }

@@ -107,17 +107,23 @@ func newComponent(name string, cfg *config, logger *elog.Component) (Component, 
 		config.HTTPClient = &http.Client{
 			Timeout: time.Second * time.Duration(cfg.S3HttpTimeoutSecs),
 		}
+		var tp = http.DefaultTransport
+		if cfg.EnableMetricInterceptor {
+			tp = metricInterceptor(name, cfg, logger, tp)
+		}
 		if cfg.EnableTraceInterceptor {
-			tp := traceLogReqIdInterceptor(name, cfg, logger, http.DefaultTransport)
+			tp = traceLogReqIdInterceptor(name, cfg, logger, tp)
 			if cfg.EnableClientTrace {
-				config.HTTPClient.Transport = otelhttp.NewTransport(tp,
+				tp = otelhttp.NewTransport(tp,
 					otelhttp.WithClientTrace(func(ctx context.Context) *httptrace.ClientTrace {
 						return otelhttptrace.NewClientTrace(ctx)
 					}))
 			} else {
-				config.HTTPClient.Transport = otelhttp.NewTransport(tp)
+				tp = otelhttp.NewTransport(tp)
 			}
 		}
+		tp = fixedInterceptor(name, cfg, logger, tp)
+		config.HTTPClient.Transport = tp
 		service := s3.New(session.Must(session.NewSession(config)))
 
 		var s3Client *S3
