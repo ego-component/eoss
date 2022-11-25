@@ -46,7 +46,7 @@ func (c *Container) Build(options ...BuildOption) Component {
 			return nil
 		}
 	}
-	comp, err := newComponent(c.config)
+	comp, err := newComponent(c.name, c.config, c.logger)
 	if err != nil {
 		c.logger.Panic("new awos client fail", elog.FieldErr(err), elog.FieldValueAny(c.config))
 	}

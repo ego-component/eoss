@@ -14,6 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/gotomicro/ego/core/elog"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
@@ -40,7 +41,7 @@ type Component interface {
 	Exists(key string) (bool, error)
 }
 
-func newComponent(cfg *config) (Component, error) {
+func newComponent(name string, cfg *config, logger *elog.Component) (Component, error) {
 	storageType := strings.ToLower(cfg.StorageType)
 
 	if storageType == StorageTypeOSS {
@@ -99,18 +100,22 @@ func newComponent(cfg *config) (Component, error) {
 				config.Endpoint = aws.String(cfg.Endpoint)
 			}
 		}
+		if cfg.Debug {
+			config.LogLevel = aws.LogLevel(aws.LogDebugWithHTTPBody | aws.LogDebugWithSigning)
+		}
 
 		config.HTTPClient = &http.Client{
 			Timeout: time.Second * time.Duration(cfg.S3HttpTimeoutSecs),
 		}
 		if cfg.EnableTraceInterceptor {
+			tp := traceLogReqIdInterceptor(name, cfg, logger, http.DefaultTransport)
 			if cfg.EnableClientTrace {
-				config.HTTPClient.Transport = otelhttp.NewTransport(http.DefaultTransport,
+				config.HTTPClient.Transport = otelhttp.NewTransport(tp,
 					otelhttp.WithClientTrace(func(ctx context.Context) *httptrace.ClientTrace {
 						return otelhttptrace.NewClientTrace(ctx)
 					}))
 			} else {
-				config.HTTPClient.Transport = otelhttp.NewTransport(http.DefaultTransport)
+				config.HTTPClient.Transport = otelhttp.NewTransport(tp)
 			}
 		}
 		service := s3.New(session.Must(session.NewSession(config)))

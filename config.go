@@ -1,6 +1,7 @@
 package awos
 
 type config struct {
+	Debug bool
 	bucketConfig
 	Buckets   map[string]bucketConfig
 	bucketKey string
