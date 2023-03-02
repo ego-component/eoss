@@ -49,6 +49,20 @@ func init() {
 	ossClient = client
 }
 
+func TestOSS_GetBucketName(t *testing.T) {
+	ossClient = Load("storage").Build(WithBucket("test-bucket"))
+	bn, err := ossClient.GetBucketName("fasdfsfsfsafsf")
+	assert.NoError(t, err)
+	assert.Equal(t, "test-bucket", bn)
+	ossClient = Load("storage").Build(WithBucket("test-bucket"), WithShards([]string{"abcdefghi", "jklmnopqrstuvwxyz0123456789"}))
+	bn, err = ossClient.GetBucketName("fdsafaddafa")
+	assert.NoError(t, err)
+	assert.Equal(t, "test-bucket-abcdefghi", bn)
+	bn, err = ossClient.GetBucketName("fdsafaddafa1")
+	assert.NoError(t, err)
+	assert.Equal(t, "test-bucket-jklmnopqrstuvwxyz0123456789", bn)
+}
+
 func TestOSS_Put(t *testing.T) {
 	meta := make(map[string]string)
 	meta["head"] = strconv.Itoa(expectHead)

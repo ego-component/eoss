@@ -23,6 +23,7 @@ const PackageName = "component.awos"
 
 // Component interface
 type Component interface {
+	GetBucketName(key string) (string, error)
 	WithContext(ctx context.Context) Component
 	Get(key string, options ...GetOptions) (string, error)
 	GetBytes(key string, options ...GetOptions) ([]byte, error)

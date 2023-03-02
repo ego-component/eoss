@@ -23,6 +23,14 @@ type OSS struct {
 	Shards map[string]*oss.Bucket
 }
 
+func (ossClient *OSS) GetBucketName(key string) (string, error) {
+	b, err := ossClient.getBucket(key)
+	if err != nil {
+		return "", err
+	}
+	return b.BucketName, nil
+}
+
 func (ossClient *OSS) WithContext(context.Context) Component {
 	// oss 暂时不好支持context，先忽略
 	return ossClient

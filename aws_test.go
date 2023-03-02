@@ -9,6 +9,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/gotomicro/ego/core/econf"
+	"github.com/stretchr/testify/assert"
 )
 
 const (
@@ -41,6 +42,20 @@ func init() {
 	}
 
 	awsClient = client
+}
+
+func TestS3_GetBucketName(t *testing.T) {
+	awsClient = Load("storage").Build(WithBucket("test-bucket"))
+	bn, err := awsClient.GetBucketName("fasdfsfsfsafsf")
+	assert.NoError(t, err)
+	assert.Equal(t, "test-bucket", bn)
+	awsClient = Load("storage").Build(WithBucket("test-bucket"), WithShards([]string{"abcdefghi", "jklmnopqrstuvwxyz0123456789"}))
+	bn, err = awsClient.GetBucketName("fdsafaddafa")
+	assert.NoError(t, err)
+	assert.Equal(t, "test-bucket-abcdefghi", bn)
+	bn, err = awsClient.GetBucketName("fdsafaddafa1")
+	assert.NoError(t, err)
+	assert.Equal(t, "test-bucket-jklmnopqrstuvwxyz0123456789", bn)
 }
 
 func TestS3_Put(t *testing.T) {

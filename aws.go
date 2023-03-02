@@ -26,6 +26,10 @@ type S3 struct {
 	ctx          context.Context
 }
 
+func (a *S3) GetBucketName(key string) (string, error) {
+	return a.getBucket(key)
+}
+
 func (a *S3) WithContext(ctx context.Context) Component {
 	b := &S3{
 		ShardsBucket: a.ShardsBucket,
