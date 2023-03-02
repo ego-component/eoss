@@ -31,11 +31,14 @@ func (a *S3) Copy(srcKey, dstKey string, options ...CopyOption) error {
 	for _, opt := range options {
 		opt(cfg)
 	}
-	srcBucket, err := a.getBucket(srcKey)
-	if err != nil {
-		return err
+	var copySource = srcKey
+	if !cfg.rawSrcKey {
+		srcBucket, err := a.getBucket(srcKey)
+		if err != nil {
+			return err
+		}
+		copySource = fmt.Sprintf("/%s/%s", srcBucket, srcKey)
 	}
-	copySource := fmt.Sprintf("/%s/%s", srcBucket, srcKey)
 	bucketName, err := a.getBucket(dstKey)
 	if err != nil {
 		return err

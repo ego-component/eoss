@@ -32,9 +32,13 @@ func (ossClient *OSS) Copy(srcKey, dstKey string, options ...CopyOption) error {
 	if err != nil {
 		return err
 	}
-	srcBucket, err := ossClient.getBucket(srcKey)
-	if err != nil {
-		return err
+	srcKeyWithBucket := srcKey
+	if !cfg.rawSrcKey {
+		srcBucket, err := ossClient.getBucket(srcKey)
+		if err != nil {
+			return err
+		}
+		srcKeyWithBucket = fmt.Sprintf("/%s/%s", srcBucket.BucketName, srcKey)
 	}
 	var ossOptions []oss.Option
 	if len(cfg.attributes) > 0 {
@@ -47,7 +51,7 @@ func (ossClient *OSS) Copy(srcKey, dstKey string, options ...CopyOption) error {
 			ossOptions = append(ossOptions, oss.Meta(k, v))
 		}
 	}
-	_, err = bucket.CopyObject(dstKey, fmt.Sprintf("/%s/%s", srcBucket.BucketName, srcKey), ossOptions...)
+	_, err = bucket.CopyObject(dstKey, srcKeyWithBucket, ossOptions...)
 	if err != nil {
 		return err
 	}

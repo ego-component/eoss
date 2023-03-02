@@ -80,6 +80,7 @@ func EnableCRCValidation() GetOptions {
 
 type copyOptions struct {
 	attributes []string
+	rawSrcKey  bool
 }
 
 func DefaultCopyOptions() *copyOptions {
@@ -91,5 +92,11 @@ type CopyOption func(options *copyOptions)
 func CopyWithAttributes(meta []string) CopyOption {
 	return func(options *copyOptions) {
 		options.attributes = meta
+	}
+}
+
+func CopyWithRawSrcKey() CopyOption {
+	return func(options *copyOptions) {
+		options.rawSrcKey = true
 	}
 }
