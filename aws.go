@@ -26,6 +26,45 @@ type S3 struct {
 	ctx          context.Context
 }
 
+func (a *S3) Copy(srcKey, dstKey string, options ...CopyOption) error {
+	cfg := DefaultCopyOptions()
+	for _, opt := range options {
+		opt(cfg)
+	}
+	srcBucket, err := a.getBucket(srcKey)
+	if err != nil {
+		return err
+	}
+	copySource := fmt.Sprintf("/%s/%s", srcBucket, srcKey)
+	bucketName, err := a.getBucket(dstKey)
+	if err != nil {
+		return err
+	}
+	input := &s3.CopyObjectInput{
+		Bucket:     aws.String(bucketName),
+		CopySource: aws.String(copySource),
+		Key:        aws.String(dstKey),
+	}
+	if len(cfg.attributes) > 0 {
+		// 如果传了 attributes 数组的情况下只做部分 meta 的拷贝
+		metadata, err := a.Head(srcKey, cfg.attributes)
+		if err != nil {
+			return err
+		}
+		if len(metadata) > 0 {
+			input.SetMetadataDirective("REPLACE")
+			for k, v := range metadata {
+				input.Metadata[k] = aws.String(v)
+			}
+		}
+	}
+	_, err = a.Client.CopyObjectWithContext(a.ctx, input)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (a *S3) GetBucketName(key string) (string, error) {
 	return a.getBucket(key)
 }

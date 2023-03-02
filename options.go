@@ -77,3 +77,19 @@ func EnableCRCValidation() GetOptions {
 		options.enableCRCValidation = true
 	}
 }
+
+type copyOptions struct {
+	attributes []string
+}
+
+func DefaultCopyOptions() *copyOptions {
+	return &copyOptions{}
+}
+
+type CopyOption func(options *copyOptions)
+
+func CopyWithAttributes(meta []string) CopyOption {
+	return func(options *copyOptions) {
+		options.attributes = meta
+	}
+}

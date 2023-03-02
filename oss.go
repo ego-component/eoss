@@ -23,6 +23,37 @@ type OSS struct {
 	Shards map[string]*oss.Bucket
 }
 
+func (ossClient *OSS) Copy(srcKey, dstKey string, options ...CopyOption) error {
+	cfg := DefaultCopyOptions()
+	for _, opt := range options {
+		opt(cfg)
+	}
+	bucket, err := ossClient.getBucket(dstKey)
+	if err != nil {
+		return err
+	}
+	srcBucket, err := ossClient.getBucket(srcKey)
+	if err != nil {
+		return err
+	}
+	var ossOptions []oss.Option
+	if len(cfg.attributes) > 0 {
+		// 如果传了 attributes 数组的情况下只做部分 meta 的拷贝
+		meta, err := ossClient.Head(srcKey, cfg.attributes)
+		if err != nil {
+			return err
+		}
+		for k, v := range meta {
+			ossOptions = append(ossOptions, oss.Meta(k, v))
+		}
+	}
+	_, err = bucket.CopyObject(dstKey, fmt.Sprintf("/%s/%s", srcBucket.BucketName, srcKey), ossOptions...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (ossClient *OSS) GetBucketName(key string) (string, error) {
 	b, err := ossClient.getBucket(key)
 	if err != nil {
