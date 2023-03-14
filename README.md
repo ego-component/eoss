@@ -1,4 +1,4 @@
-# AWOS: Wrapper For Aliyun OSS And Amazon S3
+# EOSS: Wrapper For Aliyun OSS And Amazon S3
 
 awos for node: https://github.com/shimohq/awos-js
 
@@ -15,7 +15,7 @@ awos for node: https://github.com/shimohq/awos-js
 Use go get to retrieve the SDK to add it to your GOPATH workspace, or project's Go module dependencies.
 
 ```bash
-go get github.com/ego-component/awos
+go get github.com/ego-component/eoss
 ```
 
 ## How to use
@@ -40,12 +40,12 @@ shards = [
 ```
 
 ```golang
-import "github.com/ego-component/awos"
+import "github.com/ego-component/eoss"
 
 // 单独一个 bucket 配置
-client := awos.Load("storage").Build()
+client := eoss.Load("storage").Build()
 // 多 bucket 配置
-client := awos.Load("storage").Build(awos.WithBucketKey("template"))
+client := eoss.Load("storage").Build(eoss.WithBucketKey("template"))
 
 // 带context（可记录链路）
 client.WithContext(ctx).Get(key)

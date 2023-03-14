@@ -1,4 +1,4 @@
-package awos
+package eoss
 
 type config struct {
 	Debug bool

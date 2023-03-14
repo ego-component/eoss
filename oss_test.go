@@ -1,4 +1,4 @@
-package awos
+package eoss
 
 /**
 Put your environment configuration in ".env-oss"

@@ -1,4 +1,4 @@
-package awos
+package eoss
 
 import (
 	"context"
@@ -19,7 +19,7 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
-const PackageName = "component.awos"
+const PackageName = "component.eoss"
 
 // Component interface
 type Component interface {

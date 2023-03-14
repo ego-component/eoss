@@ -1,4 +1,4 @@
-package awos
+package eoss
 
 const (
 	StorageTypeOSS = "oss"

@@ -1,4 +1,4 @@
-package awos
+package eoss
 
 import (
 	"fmt"
@@ -48,7 +48,7 @@ func (c *Container) Build(options ...BuildOption) Component {
 	}
 	comp, err := newComponent(c.name, c.config, c.logger)
 	if err != nil {
-		c.logger.Panic("new awos client fail", elog.FieldErr(err), elog.FieldValueAny(c.config))
+		c.logger.Panic("new eoss client fail", elog.FieldErr(err), elog.FieldValueAny(c.config))
 	}
 	return comp
 }

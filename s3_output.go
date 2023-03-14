@@ -1,8 +1,9 @@
-package awos
+package eoss
 
 import (
-	"github.com/aws/aws-sdk-go/service/s3"
 	"strconv"
+
+	"github.com/aws/aws-sdk-go/service/s3"
 )
 
 type HeadGetObjectOutputWrapper struct {
