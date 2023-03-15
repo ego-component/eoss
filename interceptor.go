@@ -90,6 +90,9 @@ func fixedInterceptor(name string, config *config, logger *elog.Component, base 
 func traceLogReqIdInterceptor(name string, config *config, logger *elog.Component, base http.RoundTripper) *transport {
 	t := &transport{rt: base}
 	t.onReqAfter = func(r *http.Request, res *http.Response, err error) {
+		if res == nil {
+			return
+		}
 		span := trace.SpanFromContext(r.Context())
 		if !span.SpanContext().IsValid() {
 			return
