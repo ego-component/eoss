@@ -26,7 +26,7 @@ func (h *HeadGetObjectOutputWrapper) getContentEncoding() *string {
 }
 
 func (h *HeadGetObjectOutputWrapper) getContentLength() *string {
-	if h.getObjectOutput != nil {
+	if h.getObjectOutput != nil && h.getObjectOutput.ContentLength != nil {
 		clStr := strconv.FormatInt(*h.getObjectOutput.ContentLength, 10)
 		return &clStr
 	}
