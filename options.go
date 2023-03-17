@@ -100,3 +100,19 @@ func CopyWithRawSrcKey() CopyOption {
 		options.rawSrcKey = true
 	}
 }
+
+type SignOptions func(options *signOptions)
+
+func SignWithProcess(process string) SignOptions {
+	return func(options *signOptions) {
+		options.process = &process
+	}
+}
+
+type signOptions struct {
+	process *string
+}
+
+func DefaultSignOptions() *signOptions {
+	return &signOptions{}
+}

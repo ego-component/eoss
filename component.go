@@ -34,7 +34,7 @@ type Component interface {
 	DelMulti(keys []string) error
 	Head(key string, meta []string) (map[string]string, error)
 	ListObject(key string, prefix string, marker string, maxKeys int, delimiter string) ([]string, error)
-	SignURL(key string, expired int64) (string, error)
+	SignURL(key string, expired int64, options ...SignOptions) (string, error)
 	GetAndDecompress(key string) (string, error)
 	GetAndDecompressAsReader(key string) (io.ReadCloser, error)
 	CompressAndPut(key string, reader io.ReadSeeker, meta map[string]string, options ...PutOptions) error
