@@ -41,13 +41,21 @@ func (ossClient *OSS) Copy(srcKey, dstKey string, options ...CopyOption) error {
 		srcKeyWithBucket = fmt.Sprintf("/%s/%s", srcBucket.BucketName, srcKey)
 	}
 	var ossOptions []oss.Option
-	if len(cfg.attributes) > 0 {
+	if cfg.metaKeysToCopy != nil || cfg.meta != nil {
+		ossOptions = append(ossOptions, oss.MetadataDirective(oss.MetaReplace))
+	}
+	if len(cfg.metaKeysToCopy) > 0 {
 		// 如果传了 attributes 数组的情况下只做部分 meta 的拷贝
-		meta, err := ossClient.Head(srcKey, cfg.attributes)
+		meta, err := ossClient.Head(srcKey, cfg.metaKeysToCopy)
 		if err != nil {
 			return err
 		}
 		for k, v := range meta {
+			ossOptions = append(ossOptions, oss.Meta(k, v))
+		}
+	}
+	if len(cfg.meta) > 0 {
+		for k, v := range cfg.meta {
 			ossOptions = append(ossOptions, oss.Meta(k, v))
 		}
 	}

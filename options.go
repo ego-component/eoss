@@ -79,19 +79,35 @@ func EnableCRCValidation() GetOptions {
 }
 
 type copyOptions struct {
-	attributes []string
-	rawSrcKey  bool
+	metaKeysToCopy []string
+	rawSrcKey      bool
+	meta           map[string]string
 }
 
 func DefaultCopyOptions() *copyOptions {
-	return &copyOptions{}
+	return &copyOptions{
+		metaKeysToCopy: nil,
+		rawSrcKey:      false,
+		meta:           nil,
+	}
 }
 
 type CopyOption func(options *copyOptions)
 
+// CopyWithAttributes specify metadata keys to copy
 func CopyWithAttributes(meta []string) CopyOption {
 	return func(options *copyOptions) {
-		options.attributes = meta
+		options.metaKeysToCopy = meta
+	}
+}
+
+// CopyWithNewAttributes append new attributes(meta) to new object
+//
+// NOTE: if this option was specified, the metadata(s) of source object would be dropped expect specifying keys to copy
+// using CopyWithAttributes() option.
+func CopyWithNewAttributes(meta map[string]string) CopyOption {
+	return func(options *copyOptions) {
+		options.meta = meta
 	}
 }
 
