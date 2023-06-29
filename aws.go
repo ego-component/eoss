@@ -48,18 +48,25 @@ func (a *S3) Copy(srcKey, dstKey string, options ...CopyOption) error {
 		CopySource: aws.String(copySource),
 		Key:        aws.String(dstKey),
 	}
-	if len(cfg.attributes) > 0 {
+	if cfg.metaKeysToCopy != nil || cfg.meta != nil {
+		input.SetMetadataDirective("REPLACE")
+	}
+	// copy metadata
+	if len(cfg.metaKeysToCopy) > 0 {
 		// 如果传了 attributes 数组的情况下只做部分 meta 的拷贝
-		metadata, err := a.Head(srcKey, cfg.attributes)
+		metadata, err := a.Head(srcKey, cfg.metaKeysToCopy)
 		if err != nil {
 			return err
 		}
 		if len(metadata) > 0 {
-			input.SetMetadataDirective("REPLACE")
 			for k, v := range metadata {
 				input.Metadata[k] = aws.String(v)
 			}
 		}
+	}
+	// specify new metadata
+	for k, v := range cfg.meta {
+		input.Metadata[k] = aws.String(v)
 	}
 	_, err = a.Client.CopyObjectWithContext(a.ctx, input)
 	if err != nil {
