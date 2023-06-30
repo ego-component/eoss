@@ -50,6 +50,7 @@ func (a *S3) Copy(srcKey, dstKey string, options ...CopyOption) error {
 	}
 	if cfg.metaKeysToCopy != nil || cfg.meta != nil {
 		input.SetMetadataDirective("REPLACE")
+		input.Metadata = make(map[string]*string)
 	}
 	// copy metadata
 	if len(cfg.metaKeysToCopy) > 0 {
