@@ -80,6 +80,14 @@ func newComponent(name string, cfg *config, logger *elog.Component) (Component, 
 			}
 		}
 		ossClient.cfg = cfg
+		if cfg.EnableCompressor {
+			// 目前仅支持 gzip
+			if comp, ok := compressors[cfg.CompressType]; ok {
+				ossClient.compressor = comp
+			} else {
+				logger.Warn("unknown type", zap.String("name", cfg.CompressType))
+			}
+		}
 		return ossClient, nil
 	} else if storageType == StorageTypeS3 {
 		var config *aws.Config
