@@ -295,12 +295,20 @@ func (a *S3) Put(key string, reader io.ReadSeeker, meta map[string]string, optio
 	}
 
 	if a.compressor != nil {
-		input.Body, err = a.compressor.Compress(input.Body)
+		wrapReader, i, err := GetReaderLength(input.Body)
 		if err != nil {
 			return err
 		}
-		encoding := a.compressor.ContentEncoding()
-		input.ContentEncoding = &encoding
+		if i < a.cfg.CompressLimit {
+			input.Body = wrapReader
+		} else {
+			input.Body, err = a.compressor.Compress(input.Body)
+			if err != nil {
+				return err
+			}
+			encoding := a.compressor.ContentEncoding()
+			input.ContentEncoding = &encoding
+		}
 	}
 
 	err = retry.Do(func() error {
