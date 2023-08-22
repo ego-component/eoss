@@ -3,6 +3,7 @@ package eoss
 import (
 	"context"
 	"fmt"
+	"go.uber.org/zap"
 	"io"
 	"net/http"
 	"net/http/httptrace"
@@ -78,7 +79,7 @@ func newComponent(name string, cfg *config, logger *elog.Component) (Component, 
 				Bucket: bucket,
 			}
 		}
-
+		ossClient.cfg = cfg
 		return ossClient, nil
 	} else if storageType == StorageTypeS3 {
 		var config *aws.Config
@@ -146,7 +147,15 @@ func newComponent(name string, cfg *config, logger *elog.Component) (Component, 
 				Client:     service,
 			}
 		}
-
+		s3Client.cfg = cfg
+		if cfg.EnableCompressor {
+			// 目前仅支持 gzip
+			if comp, ok := compressors[cfg.CompressType]; ok {
+				s3Client.compressor = comp
+			} else {
+				logger.Warn("unknown type", zap.String("name", cfg.CompressType))
+			}
+		}
 		return s3Client, nil
 	} else {
 		return nil, fmt.Errorf("unknown StorageType:\"%s\", only supports oss,s3", cfg.StorageType)

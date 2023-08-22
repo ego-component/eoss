@@ -21,6 +21,7 @@ var _ Component = (*OSS)(nil)
 type OSS struct {
 	Bucket *oss.Bucket
 	Shards map[string]*oss.Bucket
+	cfg    *config
 }
 
 func (ossClient *OSS) Copy(srcKey, dstKey string, options ...CopyOption) error {
