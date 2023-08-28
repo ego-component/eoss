@@ -28,7 +28,6 @@ type GzipCompressor struct {
 }
 
 func (g *GzipCompressor) Compress(reader io.ReadSeeker) (gzipReader io.ReadSeeker, err error) {
-	//	TODO buffer limit
 	var buffer bytes.Buffer
 	gzipWriter := gzip.NewWriter(&buffer)
 	_, err = io.Copy(gzipWriter, reader)
