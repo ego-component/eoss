@@ -295,14 +295,12 @@ func (a *S3) Put(key string, reader io.ReadSeeker, meta map[string]string, optio
 	}
 
 	if a.compressor != nil {
-		wrapReader, i, err := GetReaderLength(input.Body)
+		l, err := GetReaderLength(input.Body)
 		if err != nil {
 			return err
 		}
-		if i < a.cfg.CompressLimit {
-			input.Body = wrapReader
-		} else {
-			input.Body, err = a.compressor.Compress(wrapReader)
+		if l > a.cfg.CompressLimit {
+			input.Body, err = a.compressor.Compress(input.Body)
 			if err != nil {
 				return err
 			}
