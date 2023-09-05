@@ -24,6 +24,8 @@ type S3 struct {
 	BucketName   string
 	Client       *s3.S3
 	ctx          context.Context
+	cfg          *config
+	compressor   Compressor
 }
 
 func (a *S3) Copy(srcKey, dstKey string, options ...CopyOption) error {
@@ -290,6 +292,21 @@ func (a *S3) Put(key string, reader io.ReadSeeker, meta map[string]string, optio
 	}
 	if putOptions.expires != nil {
 		input.Expires = putOptions.expires
+	}
+
+	if a.compressor != nil {
+		l, err := GetReaderLength(input.Body)
+		if err != nil {
+			return err
+		}
+		if l > a.cfg.CompressLimit {
+			input.Body, err = a.compressor.Compress(input.Body)
+			if err != nil {
+				return err
+			}
+			encoding := a.compressor.ContentEncoding()
+			input.ContentEncoding = &encoding
+		}
 	}
 
 	err = retry.Do(func() error {

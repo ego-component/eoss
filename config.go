@@ -37,6 +37,12 @@ type bucketConfig struct {
 	EnableMetricInterceptor bool
 	// EnableClientTrace
 	EnableClientTrace bool
+	// EnableCompressor
+	EnableCompressor bool
+	// CompressType gzip
+	CompressType string
+	// CompressLimit 大于该值之后才压缩 单位字节
+	CompressLimit int64
 }
 
 // DefaultConfig 返回默认配置

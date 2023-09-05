@@ -19,8 +19,10 @@ import (
 var _ Component = (*OSS)(nil)
 
 type OSS struct {
-	Bucket *oss.Bucket
-	Shards map[string]*oss.Bucket
+	Bucket     *oss.Bucket
+	Shards     map[string]*oss.Bucket
+	cfg        *config
+	compressor Compressor
 }
 
 func (ossClient *OSS) Copy(srcKey, dstKey string, options ...CopyOption) error {
@@ -265,6 +267,20 @@ func (ossClient *OSS) Put(key string, reader io.ReadSeeker, meta map[string]stri
 	}
 	if putOptions.expires != nil {
 		ossOptions = append(ossOptions, oss.Expires(*putOptions.expires))
+	}
+
+	if ossClient.compressor != nil {
+		l, err := GetReaderLength(reader)
+		if err != nil {
+			return err
+		}
+		if l > ossClient.cfg.CompressLimit {
+			reader, err = ossClient.compressor.Compress(reader)
+			if err != nil {
+				return err
+			}
+			ossOptions = append(ossOptions, oss.ContentEncoding(ossClient.compressor.ContentEncoding()))
+		}
 	}
 
 	return retry.Do(func() error {
