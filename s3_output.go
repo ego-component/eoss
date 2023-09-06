@@ -30,7 +30,11 @@ func (h *HeadGetObjectOutputWrapper) getContentLength() *string {
 		clStr := strconv.FormatInt(*h.getObjectOutput.ContentLength, 10)
 		return &clStr
 	}
-	clStr := strconv.FormatInt(*h.headObjectOutput.ContentLength, 10)
+	if h.headObjectOutput != nil && h.headObjectOutput.ContentLength != nil {
+		clStr := strconv.FormatInt(*h.headObjectOutput.ContentLength, 10)
+		return &clStr
+	}
+	clStr := "0"
 	return &clStr
 }
 
